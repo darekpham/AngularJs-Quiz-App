@@ -7,7 +7,7 @@
     function DataFactory () {
         var dataObj = {
             turtlesData: turtlesData,
-            quizQuestion: quizQuestions
+            quizQuestions: quizQuestions
         };
 
         return dataObj;
