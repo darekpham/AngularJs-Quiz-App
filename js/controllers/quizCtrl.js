@@ -11,6 +11,12 @@
 
             vm.quizMetrics = quizMetrics;
             vm.dataService = dataService;
+            vm.questionAnswered = questionAnswered;
+            vm.activeQuestion = 0;
+
+            function questionAnswered () {
+                
+            }
         }
 
 
