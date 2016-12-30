@@ -14,21 +14,32 @@
             vm.questionAnswered = questionAnswered;
             vm.setActiveQuestion = setActiveQuestion;
             vm.selectAnswer = selectAnswer;
+            vm.finaliseAnswer = finaliseAnswer;
             vm.activeQuestion = 0;
+            vm.error = false;
+            vm.finalise = false;
 
             var numQuestionsAnswered = 0;
 
             
-            function setActiveQuestion () {
-                var breakOut = false;
-                var quizLength = dataService.quizQuestions.length - 1;
+            function setActiveQuestion (index) {
+                if (index === undefined) {
+                    var breakOut = false;
+                    var quizLength = dataService.quizQuestions.length - 1;
 
-                while (!breakOut) {
-                    vm.activeQuestion = vm.activeQuestion < quizLength?++vm.activeQuestion:0;
+                    while (!breakOut) {
+                        vm.activeQuestion = vm.activeQuestion < quizLength?++vm.activeQuestion:0;
 
-                    if (dataService.quizQuestions[vm.activeQuestion].selected === null) {
-                        breakOut = true;
+                        if (vm.activeQuestion === 0){
+                            vm.error = true;
+                        }
+
+                        if (dataService.quizQuestions[vm.activeQuestion].selected === null) {
+                            breakOut = true;
+                        }
                     }
+                } else {
+                    vm.activeQuestion = index;
                 }
             }
 
@@ -40,6 +51,15 @@
                     numQuestionsAnswered ++;
                     if (numQuestionsAnswered >= quizLength) {
                         //finalise quiz
+                        for (var i =0; i < quizLength; i++) {
+                            if (dataService.quizQuestions[i].selected === null) {
+                                setActiveQuestion(i);
+                                return;
+                            }
+                        }
+                        vm.error = false;
+                        vm.finalise = true;
+                        return;
                     }
                 }
 
@@ -48,6 +68,15 @@
 
             function selectAnswer (index) {
                 dataService.quizQuestions[vm.activeQuestion].selected = index;
+            }
+
+            function finaliseAnswer () {
+                vm.finalise = false;
+                numQuestionsAnswered = 0;
+                vm.activeQuestion = 0;
+                quizMetrics.markQuiz();
+                quizMetrics.changeState('quiz', false);
+                quizMetrics.changeState('results', true);
             }
 
         }

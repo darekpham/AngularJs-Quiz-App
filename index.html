@@ -18,7 +18,7 @@
             </div>
 
             <!--List Controller-->
-            <div ng-controller="listCtrl as list" ng-hide="list.quizMetrics.quizActive">
+            <div ng-controller="listCtrl as list" ng-hide="list.quizMetrics.quizActive || list.quizMetrics.resultActive">
                 <form class="form-inline well well-sm clearfix">
                     <span class="glyphicon glyphicon-search"></span>
                     <input type="text" placeholder="Search..." class="form-control" ng-model="list.search">
@@ -85,10 +85,12 @@
                         <h4>Progress:</h4>
                         <div class="btn-toolbar">
                             <button class="btn" 
-                            ng-repeat="question in quiz.dataService.quizQuestions" 
-                            ng-class="{'btn-info' : question.selected !== null, 'btn-danger' : question.selected === null}">
+                                    ng-repeat="question in quiz.dataService.quizQuestions" 
+                                    ng-class="{'btn-info' : question.selected !== null, 'btn-danger' : question.selected === null}"
+                                    ng-click="quiz.setActiveQuestion($index)">
                             <span class="glyphicon" 
-                            ng-class="{'glyphicon-pencil' : question.selected !== null, 'glyphicon-question-sign' : question.selected === null}"></span>
+                                  ng-class="{'glyphicon-pencil' : question.selected !== null, 'glyphicon-question-sign' : question.selected === null}">
+                            </span>
                             </button>
                         </div>
                     </div>
@@ -109,10 +111,15 @@
                             </div>
                         </div>
                     </div><!--Progress area-->
+
                     <div class="row">
                         <div class="col-xs-12">
+                            <div class="alert alert-danger" ng-show="quiz.error">
+                                Error! You have not answered all of the question!
+                                <button class="close" ng-click="quiz.error = false">&times</button>
+                            </div>
                             <h3>Question:</h3>
-                            <div class="well well-sm">
+                            <div class="well well-sm" ng-hide="quiz.finalise">
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <h4>{{quiz.activeQuestion + 1 + '. ' + quiz.dataService.quizQuestions[quiz.activeQuestion].text}}</h4>
@@ -141,9 +148,54 @@
                                 <button class="btn btn-warning" ng-click="quiz.questionAnswered()">Continue</button>
                             </div>
                         </div>
+
+                        <div class="well well-sm" ng-show="quiz.finalise">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h3>Are you sure you want to submit your answer?</h3>
+                                    <button class="btn btn-success" ng-click="quiz.finaliseAnswer()">Yes</button>
+                                    <button class="btn btn-danger" ng-click="quiz.finalise = false">No</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!--question row-->
+                </div>
+            </div><!--quiz controller-->
+
+            <div data-ng-controller="resultsCtrl as results" ng-show="results.quizMetrics.resultActive">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <h2>Results:</h2>
+                        <div class="btn-toolbar">
+                            <button class="btn" 
+                                    ng-repeat="question in results.dataService.quizQuestions"
+                                    ng-class="{'btn-success' : question.correct, 'btn-danger' : !question.correct}"
+                                    ng-click="results.setActiveQuestion($index)">
+                            <span class="glyphicon" ng-class="{'glyphicon-ok' : question.correct, 'glyphicon-remove' : !question.correct}"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="row">
+                            <h4>Legend:</h4>
+                            <div class="col-sm-4">
+                                <button class="btn btn-success">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </button>
+                                <p>Correct</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-danger">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                                <p>Incorrect</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!---third party js-->
@@ -154,6 +206,7 @@
         <script src="/js/app.js"></script>
         <script src="js/controllers/listCtrl.js"></script>
         <script src="js/controllers/quizCtrl.js"></script>
+        <script src="js/controllers/resultsCtrl.js"></script>
         <script src="js/factories/quizMetrics.js"></script>
         <script src="js/factories/dataService.js"></script>
     </body>
