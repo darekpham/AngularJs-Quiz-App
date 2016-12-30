@@ -29,7 +29,7 @@
         }
 
         function markQuiz () {
-            quizObj.correctAnswers = dataService.correctAnswers;
+            quizObj.correctAnswers = dataService.correctAnswer;
 
             //compair correct answers
             for (var i = 0; i < dataService.quizQuestions.length; i ++) {
